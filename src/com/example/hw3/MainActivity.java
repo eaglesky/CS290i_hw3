@@ -12,11 +12,13 @@ import org.opencv.core.Mat;
 import android.os.Bundle;
 
 import android.app.Activity;
+import android.content.Context;
 
 import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
@@ -35,6 +37,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	// GPSTracker class
     GPSTracker gps;
 	  
+
+    private SensorManager mSensorManager; 
+    private Sensor mAccelerometer; 
+    private Sensor mGyroscope;
+    
+    
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 	    @Override
 	    public void onManagerConnected(int status) {
@@ -52,14 +60,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	    }
 	};
 
-	@Override
-	public void onResume()
-	{
-	    super.onResume();
-	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
-	    
-	    
-	}
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -106,10 +107,25 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
   	       
          }
          
+         
+      
+         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 	  
+         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+         mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
 	}
 
-	
+	@Override
+	public void onResume()
+	{
+	    super.onResume();
+	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
+	    mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+	    mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+	    
+	}
 	 
 	public void onPause()
 	 {
@@ -118,6 +134,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	         mOpenCvCameraView.disableView();
 	     
 	 
+	     mSensorManager.unregisterListener(this);
 	 }
 
 	 public void onDestroy() {
@@ -144,13 +161,39 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	 }
 	 
 	
-
+     @Override
 	 public void onAccuracyChanged(Sensor sensor,int accuracy){
 			
     }
 		
+     @Override
     public void onSensorChanged(SensorEvent event){
     	
+    	 
+    	 if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER){
+	    	 float x = event.values[0];
+	    	 float y = event.values[1];
+	    	 float z = event.values[2];
+	
+	
+	    	 ((TextView)findViewById(R.id.AccX)).setText(Float.toString(x));
+	
+	    	 ((TextView)findViewById(R.id.AccY)).setText(Float.toString(y));
+	
+	    	 ((TextView)findViewById(R.id.AccZ)).setText(Float.toString(z));
+    	 } else if(event.sensor.getType()==Sensor.TYPE_GYROSCOPE) {
+    		 float x = event.values[0];
+	    	 float y = event.values[1];
+	    	 float z = event.values[2];
+	    	 
+	    	 ((TextView)findViewById(R.id.GyrX)).setText(Float.toString(x));
+	    		
+	    	 ((TextView)findViewById(R.id.GyrY)).setText(Float.toString(y));
+	
+	    	 ((TextView)findViewById(R.id.GyrZ)).setText(Float.toString(z));
+    	 }
+
+    	 
     }
 	  
 	 

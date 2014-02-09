@@ -6,6 +6,9 @@ int drawable ic_launcher 0x7f020000
 int id AccX 0x7f04000a
 int id AccY 0x7f04000c
 int id AccZ 0x7f04000e
+int id GyrX 0x7f040011
+int id GyrY 0x7f040013
+int id GyrZ 0x7f040015
 int id Hw3CameraView 0x7f040003
 int id TextView01 0x7f040004
 int id TextView02 0x7f040005
@@ -14,8 +17,12 @@ int id TextView04 0x7f040007
 int id TextView05 0x7f040008
 int id TextView06 0x7f040009
 int id TextView07 0x7f04000b
+int id TextView09 0x7f04000f
+int id TextView10 0x7f040010
+int id TextView11 0x7f040012
+int id TextView12 0x7f040014
 int id TextView8 0x7f04000d
-int id action_settings 0x7f04000f
+int id action_settings 0x7f040016
 int id any 0x7f040000
 int id back 0x7f040001
 int id front 0x7f040002
@@ -24,6 +31,7 @@ int menu main 0x7f080000
 int string acc 0x7f060006
 int string action_settings 0x7f060001
 int string app_name 0x7f060000
+int string gyr 0x7f06000a
 int string hello_world 0x7f060002
 int string latitude 0x7f060003
 int string longitude 0x7f060004

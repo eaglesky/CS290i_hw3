@@ -53,6 +53,9 @@ containing a value of this type.
         public static final int AccX=0x7f04000a;
         public static final int AccY=0x7f04000c;
         public static final int AccZ=0x7f04000e;
+        public static final int GyrX=0x7f040011;
+        public static final int GyrY=0x7f040013;
+        public static final int GyrZ=0x7f040015;
         public static final int Hw3CameraView=0x7f040003;
         public static final int TextView01=0x7f040004;
         public static final int TextView02=0x7f040005;
@@ -61,8 +64,12 @@ containing a value of this type.
         public static final int TextView05=0x7f040008;
         public static final int TextView06=0x7f040009;
         public static final int TextView07=0x7f04000b;
+        public static final int TextView09=0x7f04000f;
+        public static final int TextView10=0x7f040010;
+        public static final int TextView11=0x7f040012;
+        public static final int TextView12=0x7f040014;
         public static final int TextView8=0x7f04000d;
-        public static final int action_settings=0x7f04000f;
+        public static final int action_settings=0x7f040016;
         public static final int any=0x7f040000;
         public static final int back=0x7f040001;
         public static final int front=0x7f040002;
@@ -77,6 +84,7 @@ containing a value of this type.
         public static final int acc=0x7f060006;
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
+        public static final int gyr=0x7f06000a;
         public static final int hello_world=0x7f060002;
         public static final int latitude=0x7f060003;
         public static final int longitude=0x7f060004;
