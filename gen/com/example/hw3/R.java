@@ -50,12 +50,19 @@ containing a value of this type.
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
+        public static final int AccX=0x7f04000a;
+        public static final int AccY=0x7f04000c;
+        public static final int AccZ=0x7f04000e;
         public static final int Hw3CameraView=0x7f040003;
         public static final int TextView01=0x7f040004;
         public static final int TextView02=0x7f040005;
         public static final int TextView03=0x7f040006;
         public static final int TextView04=0x7f040007;
-        public static final int action_settings=0x7f040008;
+        public static final int TextView05=0x7f040008;
+        public static final int TextView06=0x7f040009;
+        public static final int TextView07=0x7f04000b;
+        public static final int TextView8=0x7f04000d;
+        public static final int action_settings=0x7f04000f;
         public static final int any=0x7f040000;
         public static final int back=0x7f040001;
         public static final int front=0x7f040002;
@@ -67,12 +74,16 @@ containing a value of this type.
         public static final int main=0x7f080000;
     }
     public static final class string {
+        public static final int acc=0x7f060006;
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
         public static final int hello_world=0x7f060002;
         public static final int latitude=0x7f060003;
         public static final int longitude=0x7f060004;
         public static final int unknown=0x7f060005;
+        public static final int x=0x7f060007;
+        public static final int y=0x7f060008;
+        public static final int z=0x7f060009;
     }
     public static final class style {
         /** 

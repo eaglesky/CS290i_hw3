@@ -14,6 +14,9 @@ import android.os.Bundle;
 import android.app.Activity;
 
 import android.graphics.PixelFormat;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
@@ -21,7 +24,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 
-public class MainActivity extends Activity implements CvCameraViewListener2{
+public class MainActivity extends Activity implements CvCameraViewListener2, SensorEventListener{
 
 	private CameraBridgeViewBase mOpenCvCameraView;
 	private static final String TAG = "HW3";
@@ -142,7 +145,13 @@ public class MainActivity extends Activity implements CvCameraViewListener2{
 	 
 	
 
-	
+	 public void onAccuracyChanged(Sensor sensor,int accuracy){
+			
+    }
+		
+    public void onSensorChanged(SensorEvent event){
+    	
+    }
 	  
 	 
 }

@@ -7,5 +7,8 @@
     <string name="latitude">Latitude:</string>
 	<string name="longitude">Longitude:</string>
 	<string name="unknown">Unknown</string>
-	
+	<string name="acc">Accelerometer:</string>
+	<string name="x">X: </string>
+	<string name="y">Y: </string>
+	<string name="z">Z: </string>
 </resources>
