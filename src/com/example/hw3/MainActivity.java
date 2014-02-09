@@ -8,32 +8,29 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Mat;
 
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+
 import android.os.Bundle;
-import android.provider.Settings;
+
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
+
 import android.graphics.PixelFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class MainActivity extends Activity implements CvCameraViewListener2, LocationListener{
+
+public class MainActivity extends Activity implements CvCameraViewListener2{
 
 	private CameraBridgeViewBase mOpenCvCameraView;
 	private static final String TAG = "HW3";
 	
 	private TextView latituteField;
 	private TextView longitudeField;
-	private LocationManager locationManager;
-	private String provider;
+	
+	// GPSTracker class
+    GPSTracker gps;
 	  
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 	    @Override
@@ -58,7 +55,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Loc
 	    super.onResume();
 	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
 	    
-	    locationManager.requestLocationUpdates(provider, 400, 1, this);
+	    
 	}
 	
 	@Override
@@ -78,46 +75,38 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Loc
 	     mOpenCvCameraView.setZOrderOnTop(true);
 	     mOpenCvCameraView.getHolder().setFormat(PixelFormat.TRANSPARENT);
 	     
-	     LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-	     boolean enabled = service
-	       .isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-	     // check if enabled and if not send user to the GSP settings
-	     // Better solution would be to display a dialog and suggesting to 
-	     // go to the settings
-	     if (!enabled) {
-	       Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-	       startActivity(intent);
-	     } 
-	     
+	    
 	     latituteField = (TextView) findViewById(R.id.TextView02);
 	     longitudeField = (TextView) findViewById(R.id.TextView04);
 	     
-	  // Get the location manager
-	     locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-	     // Define the criteria how to select the locatioin provider -> use
-	     // default
-	     Criteria criteria = new Criteria();
-	     provider = locationManager.getBestProvider(criteria, false);
-	     Location location = locationManager.getLastKnownLocation(provider);
-
-	     // Initialize the location fields
-	     if (location != null) {
-	       System.out.println("Provider " + provider + " has been selected.");
-	       onLocationChanged(location);
-	     } else {
-	       latituteField.setText("Location not available");
-	       longitudeField.setText("Location not available");
-	     }
+	 
+	     gps = new GPSTracker(this);
+	     
+         // check if GPS enabled    
+         if(gps.canGetLocation()){
+              
+             double lat = gps.getLatitude();
+             double lng = gps.getLongitude();
+              
+             // \n is for new line
+             //Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+             latituteField.setText(String.valueOf(lat));
+             longitudeField.setText(String.valueOf(lng));
+             
+         }else{
+             // can't get location
+             // GPS or Network is not enabled
+             // Ask user to enable GPS/network in settings
+             gps.showSettingsAlert();
+             latituteField.setText("Location not available");
+  	         longitudeField.setText("Location not available");
+  	       
+         }
+         
+	  
 	}
 
-	 @Override
-	  public void onLocationChanged(Location location) {
-	    int lat = (int) (location.getLatitude());
-	    int lng = (int) (location.getLongitude());
-	    latituteField.setText(String.valueOf(lat));
-	    longitudeField.setText(String.valueOf(lng));
-	  }
+	
 	 
 	public void onPause()
 	 {
@@ -125,7 +114,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Loc
 	     if (mOpenCvCameraView != null)
 	         mOpenCvCameraView.disableView();
 	     
-	     locationManager.removeUpdates(this);
+	 
 	 }
 
 	 public void onDestroy() {
@@ -151,24 +140,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Loc
 	     return inputFrame.rgba();
 	 }
 	 
-	 @Override
-	  public void onStatusChanged(String provider, int status, Bundle extras) {
-	    // TODO Auto-generated method stub
+	
 
-	  }
-
-	  @Override
-	  public void onProviderEnabled(String provider) {
-	    Toast.makeText(this, "Enabled new provider " + provider,
-	        Toast.LENGTH_SHORT).show();
-
-	  }
-
-	  @Override
-	  public void onProviderDisabled(String provider) {
-	    Toast.makeText(this, "Disabled provider " + provider,
-	        Toast.LENGTH_SHORT).show();
-	  }
+	
 	  
 	 
 }
