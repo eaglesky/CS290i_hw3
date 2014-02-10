@@ -23,9 +23,11 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.SurfaceView;
 //import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity implements CvCameraViewListener2, SensorEventListener{
@@ -44,6 +46,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
     private Sensor mAccelerometer; 
     private Sensor mGyroscope;
     
+    private int imageType = 0;  //0: RGB, 1: Grayscale, 2: Binary, 3: Intensity-normalized
+                                //4: Gamma-corrected
     
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 	    @Override
@@ -156,6 +160,36 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+	        case R.id.action_rgb:
+	            imageType = 0;
+	            Toast.makeText(getApplicationContext(), "RGB image", Toast.LENGTH_SHORT).show();
+	            return true;
+	        case R.id.action_gray:
+	            imageType = 1;
+	            Toast.makeText(getApplicationContext(), "Grayscale image", Toast.LENGTH_SHORT).show();
+	            return true;
+	        case R.id.action_binary:
+	        	imageType = 2;
+	        	Toast.makeText(getApplicationContext(), "Binary image", Toast.LENGTH_SHORT).show();
+	        	return true;
+	        case R.id.action_rgbNorm:
+	        	imageType = 3;
+	        	Toast.makeText(getApplicationContext(), "Intensity-normalized image", Toast.LENGTH_SHORT).show();
+	        	return true;
+	        case R.id.action_gamma:
+	        	imageType = 4;
+	        	Toast.makeText(getApplicationContext(), "Gamma-corrected image", Toast.LENGTH_SHORT).show();
+	        	return true;
+	            
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
 	public void onCameraViewStarted(int width, int height) {
 	 }
 
@@ -163,7 +197,20 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	 }
 
 	 public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-	     return inputFrame.rgba();
+		 Mat ret;
+		 switch (imageType) {
+		 case 0: //rgb
+			 ret = inputFrame.rgba();
+			 break;
+		 case 1: //grayscale
+			 ret = inputFrame.gray();
+			 break;
+		 
+	     default:
+	    	 ret = inputFrame.rgba();
+	    	 break;
+		 }
+	     return ret;
 	 }
 	 
 	
