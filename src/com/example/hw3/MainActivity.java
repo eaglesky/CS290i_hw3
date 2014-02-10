@@ -9,6 +9,7 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Mat;
 
 
+import com.example.hw3.R;
 import android.os.Bundle;
 
 import android.app.Activity;
@@ -21,8 +22,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.SurfaceView;
-import android.view.WindowManager;
+//import android.view.WindowManager;
 import android.widget.TextView;
 
 
@@ -67,12 +69,13 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		Log.i(TAG, "called onCreate");
 		super.onCreate(savedInstanceState);
 		
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-	            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+	   //         WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setContentView(R.layout.activity_main);
-		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		mOpenCvCameraView = (CameraBridgeViewBase)findViewById(R.id.Hw3CameraView);
 	     mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 	     mOpenCvCameraView.setCvCameraViewListener(this);
@@ -146,8 +149,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		 MenuInflater inflater = getMenuInflater();
+
+		inflater.inflate(R.menu.main, menu);
+		//return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	public void onCameraViewStarted(int width, int height) {

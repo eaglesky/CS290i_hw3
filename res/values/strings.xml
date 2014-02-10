@@ -3,6 +3,13 @@
 
     <string name="app_name">Hw3</string>
     <string name="action_settings">Settings</string>
+    <string name="action_rgb">RGB</string>
+    <string name="action_gray">Grayscale</string>
+    <string name="action_binary">Binary</string>
+    <string name="action_rgbNorm">Intensity-normalized</string>
+    <string name="action_gamma">Gamma-corrected</string>
+    
+    
     <string name="hello_world">Hello world!</string>
     <string name="latitude">Latitude:</string>
 	<string name="longitude">Longitude:</string>

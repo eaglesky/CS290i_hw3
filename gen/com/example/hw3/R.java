@@ -69,7 +69,11 @@ containing a value of this type.
         public static final int TextView11=0x7f040012;
         public static final int TextView12=0x7f040014;
         public static final int TextView8=0x7f04000d;
-        public static final int action_settings=0x7f040016;
+        public static final int action_binary=0x7f040018;
+        public static final int action_gamma=0x7f04001a;
+        public static final int action_gray=0x7f040017;
+        public static final int action_rgb=0x7f040016;
+        public static final int action_rgbNorm=0x7f040019;
         public static final int any=0x7f040000;
         public static final int back=0x7f040001;
         public static final int front=0x7f040002;
@@ -81,17 +85,22 @@ containing a value of this type.
         public static final int main=0x7f080000;
     }
     public static final class string {
-        public static final int acc=0x7f060006;
+        public static final int acc=0x7f06000b;
+        public static final int action_binary=0x7f060004;
+        public static final int action_gamma=0x7f060006;
+        public static final int action_gray=0x7f060003;
+        public static final int action_rgb=0x7f060002;
+        public static final int action_rgbNorm=0x7f060005;
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
-        public static final int gyr=0x7f06000a;
-        public static final int hello_world=0x7f060002;
-        public static final int latitude=0x7f060003;
-        public static final int longitude=0x7f060004;
-        public static final int unknown=0x7f060005;
-        public static final int x=0x7f060007;
-        public static final int y=0x7f060008;
-        public static final int z=0x7f060009;
+        public static final int gyr=0x7f06000f;
+        public static final int hello_world=0x7f060007;
+        public static final int latitude=0x7f060008;
+        public static final int longitude=0x7f060009;
+        public static final int unknown=0x7f06000a;
+        public static final int x=0x7f06000c;
+        public static final int y=0x7f06000d;
+        public static final int z=0x7f06000e;
     }
     public static final class style {
         /** 
