@@ -7,7 +7,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Mat;
-
+import org.opencv.imgproc.Imgproc;
 
 import com.example.hw3.R;
 import android.os.Bundle;
@@ -25,12 +25,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SurfaceView;
+import android.view.Window;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 //import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class MainActivity extends Activity implements CvCameraViewListener2, SensorEventListener{
+public class MainActivity extends Activity implements CvCameraViewListener2, SensorEventListener
+, OnSeekBarChangeListener{
 
 	private CameraBridgeViewBase mOpenCvCameraView;
 	private static final String TAG = "HW3";
@@ -38,6 +42,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	private TextView latituteField;
 	private TextView longitudeField;
 	
+	private SeekBar sb;
 	// GPSTracker class
     GPSTracker gps;
 	  
@@ -76,9 +81,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 	   //         WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		setContentView(R.layout.activity_main);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		sb = (SeekBar)findViewById(R.id.seekBar1);
+		sb.setVisibility(SeekBar.INVISIBLE);
 
 		mOpenCvCameraView = (CameraBridgeViewBase)findViewById(R.id.Hw3CameraView);
 	     mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -86,6 +93,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	     mOpenCvCameraView.setZOrderOnTop(true);
 	     mOpenCvCameraView.getHolder().setFormat(PixelFormat.TRANSPARENT);
 	     
+	     mOpenCvCameraView.setMaxFrameSize(500, 900);
 	    
 	     latituteField = (TextView) findViewById(R.id.TextView02);
 	     longitudeField = (TextView) findViewById(R.id.TextView04);
@@ -167,14 +175,24 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	        case R.id.action_rgb:
 	            imageType = 0;
 	            Toast.makeText(getApplicationContext(), "RGB image", Toast.LENGTH_SHORT).show();
+	            sb.setVisibility(SeekBar.INVISIBLE);
+	            ((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.INVISIBLE);
 	            return true;
 	        case R.id.action_gray:
 	            imageType = 1;
 	            Toast.makeText(getApplicationContext(), "Grayscale image", Toast.LENGTH_SHORT).show();
+	            sb.setVisibility(SeekBar.INVISIBLE);
+	            ((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.INVISIBLE);
 	            return true;
 	        case R.id.action_binary:
 	        	imageType = 2;
 	        	Toast.makeText(getApplicationContext(), "Binary image", Toast.LENGTH_SHORT).show();
+	        	sb.setVisibility(SeekBar.VISIBLE);
+	        	((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.VISIBLE);
+	        	sb.setMax(255);
+	        	sb.setProgress(127);
+	        	sb.setOnSeekBarChangeListener(this);
+	        	((TextView)findViewById(R.id.sbNum)).setText(Integer.toString(127));
 	        	return true;
 	        case R.id.action_rgbNorm:
 	        	imageType = 3;
@@ -197,15 +215,27 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	 }
 
 	 public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-		 Mat ret;
+		 Mat ret = null;
 		 switch (imageType) {
 		 case 0: //rgb
 			 ret = inputFrame.rgba();
+		
 			 break;
 		 case 1: //grayscale
 			 ret = inputFrame.gray();
+			 
 			 break;
-		 
+		 case 2: //Binary
+			 Mat matGray = inputFrame.gray();
+			 ret = matGray;
+			 
+			 TextView tv = (TextView)findViewById(R.id.sbNum);
+			 int thresh = Integer.parseInt(tv.getText().toString());
+			// Log.v(TAG, "Thresh: " + thresh);
+			 
+			 Imgproc.threshold(matGray, ret, thresh, 255, Imgproc.THRESH_BINARY);
+			 break;
+			 
 	     default:
 	    	 ret = inputFrame.rgba();
 	    	 break;
@@ -248,6 +278,24 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 
     	 
     }
+     
+     @Override
+ 	public void onProgressChanged(SeekBar v, int progress, boolean isUser) {
+ 		TextView tv = (TextView)findViewById(R.id.sbNum);
+ 		tv.setText(Integer.toString(progress));		
+ 	}
+
+ 	@Override
+ 	public void onStartTrackingTouch(SeekBar seekBar) {
+ 		// TODO Auto-generated method stub
+ 		
+ 	}
+
+ 	@Override
+ 	public void onStopTrackingTouch(SeekBar seekBar) {
+ 		// TODO Auto-generated method stub
+ 		
+ 	}
 	  
 	 
 }
