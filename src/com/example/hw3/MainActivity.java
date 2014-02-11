@@ -472,7 +472,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
  			 //Toast.makeText(getApplicationContext(), "External storage is not writable!", Toast.LENGTH_SHORT).show();
 			  return false;
 		 }
- 		 
+ 		Mat mBgr = new Mat();
+
+ 		  Imgproc.cvtColor(imgMat, mBgr, Imgproc.COLOR_RGBA2BGR, 3);
 		 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		 String filename = "image_" + imgNum + ".jpg";
 		 imgNum++;
@@ -482,7 +484,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		  
 		  Boolean bool = null;
 		  filename = file.toString();
-		  bool = Highgui.imwrite(filename, imgMat);
+		  bool = Highgui.imwrite(filename, mBgr);
 	
 		  if (bool == true)
 			 // Toast.makeText(getApplicationContext(), "Saved as " + filename, Toast.LENGTH_SHORT).show();
