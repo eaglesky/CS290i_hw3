@@ -72,6 +72,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
     
     private boolean isTapped = false;
     private int imgNum;
+    private Mat curImg = null;
     
     private void setLut(double gamma)
     {
@@ -114,7 +115,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	    	    	    	    switch(action) {
 	    	    	    	        case (MotionEvent.ACTION_DOWN) :
 	    	    	    	            Log.d(TAG,"Action was DOWN");
+	    	    	    	            
 	    	    	    	        	isTapped = true;
+	    	    	    	        	
+	    	    	    	        	if (curImg != null)
+	    	    	    	        		saveImage(curImg);
 	    	    	    	            return false;
 	    	    	    	        case (MotionEvent.ACTION_MOVE) :
 	    	    	    	            Log.d(TAG,"Action was MOVE");
@@ -242,6 +247,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	         mOpenCvCameraView.disableView();
 	     
 	     mSensorManager.unregisterListener(this);
+	   
+	     
 		 SharedPreferences numbers = getSharedPreferences("Numbers", 0);
 	     SharedPreferences.Editor editor = numbers.edit();
 	     editor.putInt("imgNum", imgNum);
@@ -250,7 +257,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	
 	 public void onDestroy() {
 	     super.onDestroy();
-	     if (mOpenCvCameraView != null)
+	     gps.stopUsingGPS();
+	   /*  if (mOpenCvCameraView != null)
 	         mOpenCvCameraView.disableView();
 	     
 	     mSensorManager.unregisterListener(this);
@@ -258,7 +266,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	     SharedPreferences numbers = getSharedPreferences("Numbers", 0);
 	     SharedPreferences.Editor editor = numbers.edit();
 	     editor.putInt("imgNum", imgNum);
-	     editor.commit();
+	     editor.commit();*/
 
 	 }
 	 
@@ -391,8 +399,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		 
 		 if (isTapped) {
 			 isTapped = false;
-			 saveImage(ret);
+			// saveImage(ret);
 		 }
+		 
+		 curImg = ret;
 	     return ret;
 	 }
 	 
@@ -492,10 +502,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		  else
 			  bool = Highgui.imwrite(filename, imgMat);
 	
-		  if (bool == true)
-			 // Toast.makeText(getApplicationContext(), "Saved as " + filename, Toast.LENGTH_SHORT).show();
+		  if (bool == true) {
+			  Toast.makeText(getApplicationContext(), "Saved as " + filename, Toast.LENGTH_SHORT).show();
 			  Log.d(TAG, "Succeed writing image to" + filename);
-		  else
+		  } else
 		    Log.d(TAG, "Fail writing image to external storage");
 		  
 		  return bool;
