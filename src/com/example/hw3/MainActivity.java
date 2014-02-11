@@ -7,6 +7,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import com.example.hw3.R;
@@ -26,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 //import android.view.WindowManager;
@@ -78,7 +80,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		Log.i(TAG, "called onCreate");
 		super.onCreate(savedInstanceState);
 		
-		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 	   //         WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -235,7 +237,39 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 			 
 			 Imgproc.threshold(matGray, ret, thresh, 255, Imgproc.THRESH_BINARY);
 			 break;
+		 
+		 case 3: //Intensity-normalized
+			 ret = inputFrame.rgba();
 			 
+			 int channelNum = ret.channels();
+			 int rowNum = (int) ret.rows();
+		     int colNum = (int) ret.cols();
+		     //Log.v(TAG, rowNum + ", " + colNum);
+		     int sum = 255;
+		    // int x = 0;
+		    // int y = 0;
+		     for (int x = 0; x < rowNum; x++)
+		    	 for (int y = 0; y < colNum; y++)
+		    	 {
+		    		 double[] rgb = ret.get(x, y);
+		    		 double total = rgb[0] + rgb[1] + rgb[2];
+		    				    		 
+		    		 //Log.v(TAG, rgba);
+		    		 
+		    		// double[] rgbn = new double[channelNum];
+		    		 
+		    		 rgb[0] = rgb[0]/total*(double)sum;
+		    		 rgb[1] = rgb[1]/total*(double)sum;
+		    		 rgb[2] = rgb[2]/total*(double)sum;
+		    		 
+		    		 
+		    		 ret.put(x, y, rgb);
+		    		 
+		    		 
+		    	 }
+		    
+		    // Log.v(TAG, rgbn[0] + ", " + rgbn[1] + ", " + rgbn[2])
+			 break;
 	     default:
 	    	 ret = inputFrame.rgba();
 	    	 break;
