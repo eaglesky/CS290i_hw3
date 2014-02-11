@@ -474,7 +474,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		 }
  		Mat mBgr = new Mat();
 
+ 		 if ((imageType != 1)&&(imageType != 2))
  		  Imgproc.cvtColor(imgMat, mBgr, Imgproc.COLOR_RGBA2BGR, 3);
+ 		  
 		 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		 String filename = "image_" + imgNum + ".jpg";
 		 imgNum++;
@@ -484,7 +486,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		  
 		  Boolean bool = null;
 		  filename = file.toString();
-		  bool = Highgui.imwrite(filename, mBgr);
+		  
+		  if ((imageType != 1)&&(imageType != 2))
+			  bool = Highgui.imwrite(filename, mBgr);
+		  else
+			  bool = Highgui.imwrite(filename, imgMat);
 	
 		  if (bool == true)
 			 // Toast.makeText(getApplicationContext(), "Saved as " + filename, Toast.LENGTH_SHORT).show();
