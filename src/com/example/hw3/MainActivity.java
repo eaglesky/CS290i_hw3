@@ -1,5 +1,7 @@
 package com.example.hw3;
 
+import java.io.File;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
@@ -10,24 +12,32 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
+import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 import com.example.hw3.R;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.SeekBar;
@@ -35,7 +45,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 //import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.view.MotionEvent;
 
 public class MainActivity extends Activity implements CvCameraViewListener2, SensorEventListener
 , OnSeekBarChangeListener{
@@ -59,6 +69,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
                                 //4: Gamma-corrected
     
     private Mat lut;
+    
+    private boolean isTapped = false;
+    private int imgNum;
     
     private void setLut(double gamma)
     {
@@ -93,7 +106,36 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	                mOpenCvCameraView.enableView();
 	                
 	                openCvInit();
-	                
+	                mOpenCvCameraView.setOnTouchListener(new OnTouchListener() {
+	    	    	    public boolean onTouch(View v, MotionEvent event) {
+	    	    	        // ... Respond to touch events 
+	    	    	    	 int action = MotionEventCompat.getActionMasked(event);
+	    	    	         
+	    	    	    	    switch(action) {
+	    	    	    	        case (MotionEvent.ACTION_DOWN) :
+	    	    	    	            Log.d(TAG,"Action was DOWN");
+	    	    	    	        	isTapped = true;
+	    	    	    	            return false;
+	    	    	    	        case (MotionEvent.ACTION_MOVE) :
+	    	    	    	            Log.d(TAG,"Action was MOVE");
+	    	    	    	            return true;
+	    	    	    	        case (MotionEvent.ACTION_UP) :
+	    	    	    	            Log.d(TAG,"Action was UP");
+	    	    	    	            return true;
+	    	    	    	        case (MotionEvent.ACTION_CANCEL) :
+	    	    	    	            Log.d(TAG,"Action was CANCEL");
+	    	    	    	            return true;
+	    	    	    	        case (MotionEvent.ACTION_OUTSIDE) :
+	    	    	    	            Log.d(TAG,"Movement occurred outside bounds " +
+	    	    	    	                    "of current screen element");
+	    	    	    	            return true;      
+	    	    	    	        default : 
+	    	    	    	            return true;
+	    	    	    	    }      
+	    	    	    	    
+	    	    	        
+	    	    	    }
+	    	     });
 	            } break;
 	            default:
 	            {
@@ -129,7 +171,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	     mOpenCvCameraView.getHolder().setFormat(PixelFormat.TRANSPARENT);
 	     
 	     mOpenCvCameraView.setMaxFrameSize(500, 900);
-	    
+	  
+	     
 	     latituteField = (TextView) findViewById(R.id.TextView02);
 	     longitudeField = (TextView) findViewById(R.id.TextView04);
 	     
@@ -167,6 +210,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
          mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
          
        
+         SharedPreferences numbers = getSharedPreferences("Numbers", 0);
+         imgNum = numbers.getInt("imgNum", 0);
+
 	}
 
 	@Override
@@ -189,10 +235,31 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	     mSensorManager.unregisterListener(this);
 	 }
 
+	public void onStop()
+	{
+		super.onPause();
+	     if (mOpenCvCameraView != null)
+	         mOpenCvCameraView.disableView();
+	     
+	     mSensorManager.unregisterListener(this);
+		 SharedPreferences numbers = getSharedPreferences("Numbers", 0);
+	     SharedPreferences.Editor editor = numbers.edit();
+	     editor.putInt("imgNum", imgNum);
+	     editor.commit();
+	}
+	
 	 public void onDestroy() {
 	     super.onDestroy();
 	     if (mOpenCvCameraView != null)
 	         mOpenCvCameraView.disableView();
+	     
+	     mSensorManager.unregisterListener(this);
+	     
+	     SharedPreferences numbers = getSharedPreferences("Numbers", 0);
+	     SharedPreferences.Editor editor = numbers.edit();
+	     editor.putInt("imgNum", imgNum);
+	     editor.commit();
+
 	 }
 	 
 	@Override
@@ -321,6 +388,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	    	 ret = inputFrame.rgba();
 	    	 break;
 		 }
+		 
+		 if (isTapped) {
+			 isTapped = false;
+			 saveImage(ret);
+		 }
 	     return ret;
 	 }
 	 
@@ -385,5 +457,41 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
  		
  	}
 	  
-	 
+ 	/* Checks if external storage is available for read and write */
+ 	public boolean isExternalStorageWritable() {
+ 	    String state = Environment.getExternalStorageState();
+ 	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+ 	        return true;
+ 	    }
+ 	    return false;
+ 	}
+
+ 	private Boolean saveImage(Mat imgMat) {
+ 			
+ 		 if (!isExternalStorageWritable()) {
+ 			 //Toast.makeText(getApplicationContext(), "External storage is not writable!", Toast.LENGTH_SHORT).show();
+			  return false;
+		 }
+ 		 
+		 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		 String filename = "image_" + imgNum + ".jpg";
+		 imgNum++;
+		 File file = new File(path, filename);
+	
+		 
+		  
+		  Boolean bool = null;
+		  filename = file.toString();
+		  bool = Highgui.imwrite(filename, imgMat);
+	
+		  if (bool == true)
+			 // Toast.makeText(getApplicationContext(), "Saved as " + filename, Toast.LENGTH_SHORT).show();
+			  Log.d(TAG, "Succeed writing image to" + filename);
+		  else
+		    Log.d(TAG, "Fail writing image to external storage");
+		  
+		  return bool;
+    }
+ 	
+ 	
 }
