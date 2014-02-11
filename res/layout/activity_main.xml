@@ -199,24 +199,45 @@
         android:layout_height="match_parent"
         
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/linearLayout1" />
-
-        <SeekBar
-            android:id="@+id/seekBar1"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:max="100"
-            android:rotation="270" />
+         />
+       
+      <SeekBar
+          android:id="@+id/seekBar1"
+          android:layout_width="100dip"
+          android:layout_height="wrap_content"
+          
+          android:minHeight="20dip"
+          android:maxHeight="20dip" 
+        
+          android:layout_alignParentRight = "true"
+          android:layout_centerVertical="true"
+          android:max="100"
+          android:rotation="270" 
+        />
 
         <TextView
-            android:id="@+id/sbNum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/seekBar1"
-            android:layout_below="@+id/seekBar1"
-            android:layout_marginLeft="36dp"
-            android:layout_marginTop="74dp" />
-                
+          android:id="@+id/sbValName"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          
+         
+          android:layout_alignLeft="@+id/seekBar1"
+          android:layout_below="@+id/seekBar1"
+          android:layout_marginLeft="36dp"
+          android:layout_marginTop="74dp" 
+          />
+        
+      
+      <TextView
+          android:id="@+id/sbNum"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignLeft="@+id/seekBar1"
+          
+          android:layout_marginLeft="36dp"
+          android:layout_marginTop="74dp" 
+          />
+
+    
+     
 </RelativeLayout>

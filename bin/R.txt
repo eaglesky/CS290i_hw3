@@ -30,9 +30,9 @@ int id action_rgbNorm 0x7f04001c
 int id any 0x7f040000
 int id back 0x7f040001
 int id front 0x7f040002
-int id linearLayout1 0x7f040016
 int id sbNum 0x7f040018
-int id seekBar1 0x7f040017
+int id sbValName 0x7f040017
+int id seekBar1 0x7f040016
 int layout activity_main 0x7f030000
 int menu main 0x7f080000
 int string acc 0x7f06000b

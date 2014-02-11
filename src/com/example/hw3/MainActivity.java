@@ -6,6 +6,8 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -56,6 +58,31 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
     private int imageType = 0;  //0: RGB, 1: Grayscale, 2: Binary, 3: Intensity-normalized
                                 //4: Gamma-corrected
     
+    private Mat lut;
+    
+    private void setLut(double gamma)
+    {
+    	 for( int i = 0; i < 256; i++ )  
+    	 {  
+    	        double data = Math.pow((double)(i/255.0), gamma) * 255.0;  
+    	        lut.put(0, i, data);
+    	 } 
+    }
+    
+    private void setBarTextInvisible()
+    {
+    	sb.setVisibility(SeekBar.INVISIBLE);
+        ((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.INVISIBLE);
+        ((TextView)findViewById(R.id.sbValName)).setVisibility(TextView.INVISIBLE);
+    }
+    
+    private void setBarTextVisible()
+    {
+    	sb.setVisibility(SeekBar.VISIBLE);
+        ((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.VISIBLE);
+        ((TextView)findViewById(R.id.sbValName)).setVisibility(TextView.VISIBLE);
+    }
+    
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 	    @Override
 	    public void onManagerConnected(int status) {
@@ -64,6 +91,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	            {
 	                Log.i(TAG, "OpenCV loaded successfully");
 	                mOpenCvCameraView.enableView();
+	                
+	                openCvInit();
+	                
 	            } break;
 	            default:
 	            {
@@ -73,7 +103,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	    }
 	};
 
-
+	private void openCvInit()
+	{
+		lut = new Mat(1, 256, CvType.CV_8U);
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +165,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	  
          mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
          mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+         
+       
 	}
 
 	@Override
@@ -177,32 +212,38 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 	        case R.id.action_rgb:
 	            imageType = 0;
 	            Toast.makeText(getApplicationContext(), "RGB image", Toast.LENGTH_SHORT).show();
-	            sb.setVisibility(SeekBar.INVISIBLE);
-	            ((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.INVISIBLE);
+	            setBarTextInvisible();
 	            return true;
 	        case R.id.action_gray:
 	            imageType = 1;
 	            Toast.makeText(getApplicationContext(), "Grayscale image", Toast.LENGTH_SHORT).show();
-	            sb.setVisibility(SeekBar.INVISIBLE);
-	            ((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.INVISIBLE);
+	            setBarTextInvisible();
 	            return true;
 	        case R.id.action_binary:
 	        	imageType = 2;
 	        	Toast.makeText(getApplicationContext(), "Binary image", Toast.LENGTH_SHORT).show();
-	        	sb.setVisibility(SeekBar.VISIBLE);
-	        	((TextView)findViewById(R.id.sbNum)).setVisibility(TextView.VISIBLE);
+	        	setBarTextVisible();
 	        	sb.setMax(255);
 	        	sb.setProgress(127);
 	        	sb.setOnSeekBarChangeListener(this);
 	        	((TextView)findViewById(R.id.sbNum)).setText(Integer.toString(127));
+	        	((TextView)findViewById(R.id.sbValName)).setText("Threshold");
 	        	return true;
 	        case R.id.action_rgbNorm:
 	        	imageType = 3;
 	        	Toast.makeText(getApplicationContext(), "Intensity-normalized image", Toast.LENGTH_SHORT).show();
+	        	setBarTextInvisible();
 	        	return true;
 	        case R.id.action_gamma:
 	        	imageType = 4;
 	        	Toast.makeText(getApplicationContext(), "Gamma-corrected image", Toast.LENGTH_SHORT).show();
+	        	setBarTextVisible();
+	        	((TextView)findViewById(R.id.sbValName)).setText("Gamma");
+	        	sb.setMax(100);
+	        	sb.setProgress(10);
+	        	sb.setOnSeekBarChangeListener(this);
+	        	((TextView)findViewById(R.id.sbNum)).setText(Integer.toString(1));
+	        	setLut(1);
 	        	return true;
 	            
 	        default:
@@ -270,6 +311,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
 		    
 		    // Log.v(TAG, rgbn[0] + ", " + rgbn[1] + ", " + rgbn[2])
 			 break;
+			 
+		 case 4: //Gamma-corrected
+			 Mat rgba = inputFrame.rgba();
+			 ret = rgba;
+			 Core.LUT(rgba, lut, ret);
+			 break;
 	     default:
 	    	 ret = inputFrame.rgba();
 	    	 break;
@@ -316,7 +363,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2, Sen
      @Override
  	public void onProgressChanged(SeekBar v, int progress, boolean isUser) {
  		TextView tv = (TextView)findViewById(R.id.sbNum);
- 		tv.setText(Integer.toString(progress));		
+ 		
+ 		if (imageType == 2)
+ 			tv.setText(Integer.toString(progress));	
+ 		else if (imageType == 4) {
+ 			double dGamma = (double)progress/10.0;
+ 			setLut(dGamma);
+ 			tv.setText(String.valueOf(dGamma));	
+ 		}
  	}
 
  	@Override

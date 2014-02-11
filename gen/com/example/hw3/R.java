@@ -77,9 +77,9 @@ containing a value of this type.
         public static final int any=0x7f040000;
         public static final int back=0x7f040001;
         public static final int front=0x7f040002;
-        public static final int linearLayout1=0x7f040016;
         public static final int sbNum=0x7f040018;
-        public static final int seekBar1=0x7f040017;
+        public static final int sbValName=0x7f040017;
+        public static final int seekBar1=0x7f040016;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
